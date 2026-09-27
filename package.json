@@ -1,0 +1,13 @@
+{
+  "name": "coast-aerial-coverage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "海岸遗址航拍覆盖带连续平面覆盖认证（纯静态前端，零运行时依赖）",
+  "scripts": {
+    "test": "node --test tests/geometry.test.mjs",
+    "build": "node scripts/build.mjs",
+    "smoke": "node tests/smoke.mjs",
+    "verify": "node --test tests/geometry.test.mjs && node scripts/build.mjs && node tests/smoke.mjs && node tests/ui-smoke.mjs"
+  }
+}

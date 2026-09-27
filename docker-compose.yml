@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    image: coast-aerial-coverage-web
+    # 宿主机端口由 WEB_PORT 配置（默认 8080），容器内固定 80
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    restart: unless-stopped
+
+  # 一次性验证服务：单元测试 + 前端构建 + 向覆盖认证业务模块提交合格/风险冒烟
+  # 自行退出，以退出码报告结果（0 全部通过，非 0 存在失败）
+  verify:
+    build:
+      context: .
+      target: verify
+    image: coast-aerial-coverage-verify
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: "no"

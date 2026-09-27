@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海岸遗址航拍覆盖认证</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>海岸遗址航拍覆盖认证</h1>
+    <p class="subtitle">连续平面判定 · 非栅格非采样 · 边界接触计入覆盖 · 全部计算仅在本地浏览器完成</p>
+  </header>
+
+  <main class="layout">
+    <!-- 左：草稿录入 -->
+    <section class="panel editor">
+      <h2>测绘草稿</h2>
+
+      <div class="presets">
+        <button type="button" data-preset="pass">填入：合格示例</button>
+        <button type="button" data-preset="gap">填入：漏拍风险</button>
+        <button type="button" data-preset="triple">填入：三重曝光</button>
+      </div>
+
+      <h3>发掘区工作区（逆时针凸多边形顶点）</h3>
+      <div class="vertex-head">
+        <span>#</span><span>x（m）</span><span>y（m）</span><span></span>
+      </div>
+      <div id="siteRows" class="rows"></div>
+      <button type="button" id="addSiteVertex" class="minor">+ 增加顶点</button>
+
+      <h3>矩形覆盖带（3–12 条，整数中心 / 宽高 / 角度）</h3>
+      <div class="strip-head">
+        <span>名称</span><span>中心x</span><span>中心y</span><span>宽</span><span>高</span><span>角度°</span><span></span>
+      </div>
+      <div id="stripRows" class="rows"></div>
+      <div class="strip-actions">
+        <button type="button" id="addStrip" class="minor">+ 增加覆盖带</button>
+        <span id="stripCountHint" class="hint"></span>
+      </div>
+
+      <button type="button" id="certifyBtn" class="primary">发起认证</button>
+      <p id="revokeNote" class="revoke hidden">草稿已修改——旧认证报告已立即撤销，平面图仅显示当前草稿，请重新发起认证。</p>
+    </section>
+
+    <!-- 右：结论 + 平面图 + 明细 -->
+    <section class="panel result">
+      <div id="verdict" class="verdict idle">尚未认证：编辑草稿后点击「发起认证」。</div>
+
+      <h2>平面图</h2>
+      <div class="plan-wrap">
+        <svg id="plan" viewBox="0 0 820 560" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:#1e3a5f"></i>发掘区边界</span>
+        <span><i class="sw strip-a"></i>覆盖带</span>
+        <span><i class="sw gap"></i>漏拍区（0 条带）</span>
+        <span><i class="sw triple"></i>三重曝光区（≥3 条带）</span>
+        <label class="mesh-toggle"><input type="checkbox" id="meshToggle" /> 显示连续切分单元</label>
+      </div>
+
+      <h2>覆盖汇总</h2>
+      <div id="summary" class="summary muted">暂无报告</div>
+
+      <h2>各带明细</h2>
+      <div class="table-wrap">
+        <table id="stripTable">
+          <thead>
+            <tr>
+              <th>#</th><th>名称</th><th>中心 (整数)</th><th>宽×高 (m)</th><th>角度</th>
+              <th>面积 (m²)</th><th>发掘区内面积 (m²)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <h2>风险区域与边界证据</h2>
+      <div id="risks" class="risks muted">暂无报告</div>
+    </section>
+  </main>
+
+  <footer>
+    判定方法：以各覆盖带四条边所在直线对工作区递归进行凸多边形半平面二分切割，得到覆盖带集合恒定的互不重叠凸单元；
+    单元位图为 0 即漏拍，位数 ≥3 即三重曝光；另解析扫描零面积共线重叠段与多重点接触。
+  </footer>
+
+  <script type="module" src="./app.bundle.js"></script>
+</body>
+</html>
